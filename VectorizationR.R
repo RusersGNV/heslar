@@ -111,7 +111,7 @@ f1.slow <- function (n) {
   return(l)
 }
 # BETTER PRACTICE: This appends 1 number to the list for each iteration (1 input, 1 output), however,
-# the use of length() slows down this code 
+# tkhe use of length() slows down this code 
 f2.faster <- function (n) {
   l <- list()
   for(idx in 1:n) {
@@ -146,20 +146,26 @@ data <- data.frame(replicate(3, sample(-360:360, 1e4, rep=TRUE)))
 test1 <- system.time(
   for (i in 1:nrow(data)) {
     for (j in 1:ncol(data)) {
-      if (data[i,1] < 0) {
-        data[i,1] <- data[i,1] + 360
-      } else data[i,1]
+      if (data[i,j] < 0) {
+        data[i,j] <- data[i,j] + 360
+      } else data[i,j]
     }
   }
 )
-# However, we can apply a simple conditional masking statement to skip the for loop.
+# However, we can apply a simple conditional masking statement to apply per column.
 # base R
+data <- data.frame(replicate(3, sample(-360:360, 1e4, rep=TRUE)))
 test2 <- system.time(
-  data[data[j] <= 0,j] <- data[data[j] <= 0,j] + 360
+  for (j in 1:3) {
+    data[data[j] <= 0,j] <- data[data[j] <= 0,j] + 360
+  }
 )
 # dplyr method
+data <- data.frame(replicate(3, sample(-360:360, 1e4, rep=TRUE)))
 test3 <- system.time(
-  data %>% mutate(X1 = ifelse(X1 < 0, X1+360, X1))
+  data %>% mutate(X1 = ifelse(X1 < 0, X1+360, X1),
+                  X2 = ifelse(X2 < 0, X2+360, X2),
+                  X3 = ifelse(X3 < 0, X3+360, X3))
 )
 
 # check results
